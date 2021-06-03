@@ -85,8 +85,36 @@ def get_gradiant(x, y, alpha, epochs=1, theta0=0, theta1=0):
             break
     return all_theta0, all_theta1, all_loss_functions, all_hypothesis, theta0, theta1
 
+def stochastic_GD(x_points, y_points, no_of_iterations):
+    """Function that takes the input data and the target data and plots the loss function against the number of
+    iterations and prints the accuracy of the system"""
+    theta0 = 0
+    theta1 = 0
+    alpha = .001
+    m = len(y_points)
+    gradient = np.zeros(2)
+    loss_function = []
+    hypothesis_list = []
+    for i in range(no_of_iterations):
+        for j in range(m):
+            hypothesis = theta0 + theta1 * x_points[j]
+            hypothesis_list.append(hypothesis)
+            gradient[0] = hypothesis - y_points[j]
+            gradient[1] = (hypothesis - y_points[j]) * x_points[j]
+            cost = ((hypothesis - y_points[j])**2)/2
+            loss_function.append(cost)
+            theta0 = theta0 - alpha * gradient[0]
+            theta1 = theta1 - alpha * gradient[1]
+        new_hypothesis = [(theta0 + theta1 * x) for x in x_points]
+        print(r2_score(y_points, new_hypothesis))
+    hypothesis_list = np.array(hypothesis_list)
+    print("Final Accuracy = " + str(r2_score(y_points, hypothesis_list[-100:])))
+    plt.plot(np.arange(no_of_iterations*m), loss_function)
+    plt.show()
+
 def using_mini_batch(x, y):
-    """Function that takes the input data and the target data and prints the accuracy of the system"""
+    """Function that takes the input data and the target data and prints the accuracy of the system using the
+    mini batch system"""
     theta0 = 0
     theta1 = 0
     for j in range(10):
@@ -95,6 +123,8 @@ def using_mini_batch(x, y):
             theta0 = inner_data[4]
             theta1 = inner_data[5]
             get_r2score(inner_data[3], y[i:i + 20])
+            plt.plot(np.arange(len(inner_data[2])), inner_data[2])
+        plt.show()
 
 def get_gradiant_using_momentum(x, y, alpha, epochs=1, gama=0.8):
     """Function that takes the input data, target labels, learning rate and the number of iterations to be
@@ -182,3 +212,9 @@ b = 1
 input_data = np.linspace(0, 20, N)
 target_labels = a * input_data + b
 using_mini_batch(input_data, target_labels)
+
+# a = -2
+# b = 1
+# input_data = np.linspace(0, 20, N)
+# target_labels = a * input_data + b
+# stochastic_GD(input_data, target_labels, 3)
