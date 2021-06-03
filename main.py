@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.metrics import r2_score
 N = 50
-LEARNING_RATE = 0.001
+LEARNING_RATE = 0.0001
 
 def plot_data():
     """Function That plots the loss function vs number of trials"""
@@ -12,9 +12,9 @@ def plot_data():
     plt.title("Plotting my Data")
     plt.show()
 
-def plot_loss_epochs(loss_functions, epochs=1):
+def plot_loss_epochs(loss_functions):
     """Function That plots the loss function vs number of trials"""
-    plt.plot(loss_functions, np.arange(epochs))
+    plt.plot(loss_functions, np.arange(len(loss_functions)))
     plt.xlabel("Loss Functions")
     plt.ylabel("Epochs (Number Of full Iterations)")
     plt.title("Loss Functions vs Epochs")
@@ -68,15 +68,17 @@ def get_gradiant(x, y, alpha, epochs=1):
         all_hypothesis.append(hypothesis)
         loss_function = (1 / 2 * m) * sum((hypothesis - y) ** 2)
         all_loss_functions.append(loss_function)
-        delta_theta0 = (1 / m) * sum(hypothesis - y)
-        delta_theta1 = (1 / m) * sum((hypothesis - y) * x)
-        theta0 = theta0 - alpha * delta_theta0
+        gradient = ((1 / m) * sum(hypothesis - y), (1 / m) * sum((hypothesis - y) * x))
+        theta0 = theta0 - alpha * gradient[0]
         all_theta0.append(theta0)
-        theta1 = theta1 - alpha * delta_theta1
+        theta1 = theta1 - alpha * gradient[1]
         all_theta1.append(theta1)
+        magnitude_gradient = np.sqrt(sum(np.array(gradient) ** 2))
+        if np.round(magnitude_gradient, 6) < 0.0001:
+            break
     return all_theta0, all_theta1, all_loss_functions, all_hypothesis, theta0, theta1
 
-def get_gradiant_using_momentum(x, y, alpha, epochs=1, gama=0.99):
+def get_gradiant_using_momentum(x, y, alpha, epochs=1, gama=0.8):
     """Function that takes the input data, target labels, learning rate and the number of iterations to be
     performed then applies the mean  square error method and  returns the change in weight as float, bias as float
     ,loss functions as a list ,predictions as a list, and the final weight as float and bias as float"""
@@ -88,20 +90,22 @@ def get_gradiant_using_momentum(x, y, alpha, epochs=1, gama=0.99):
     all_loss_functions = []
     all_hypothesis = []
     count = 1
-    old_loss_function = 0
+    old_vt = (0, 0)
     for _ in range(epochs):
         hypothesis = theta0 + theta1 * x
         all_hypothesis.append(hypothesis)
         loss_function = (1 / 2 * m) * sum((hypothesis - y) ** 2)
-        gradient = ((alpha / m) * sum(hypothesis - y), (alpha / m) * sum((hypothesis - y) * x))
-        vt = (gama * old_loss_function + gradient[0], gama * old_loss_function + gradient[1])
+        gradient = ((1 / m) * sum(hypothesis - y), (1 / m) * sum((hypothesis - y) * x))
+        vt = (gama * old_vt[0] + alpha * gradient[0], gama * old_vt[1] + alpha * gradient[1])
         theta0 = theta0 - vt[0]
         all_theta0.append(theta0)
         theta1 = theta1 - vt[1]
         all_theta1.append(theta1)
         all_loss_functions.append(loss_function)
-        old_loss_function = loss_function
-        if np.round(gradient[0], 6) < 0.0001 or np.round(gradient[1], 6) < 0.0001:
+        old_vt = vt
+        magnitude_gradient = np.sqrt(sum(np.array(gradient) ** 2))
+        print(magnitude_gradient)
+        if np.round(magnitude_gradient, 6) < 0.0001:
             break
         print(count)
         count += 1
@@ -124,3 +128,5 @@ b = 2
 input_data = np.linspace(0, 20, N)
 target_labels = a * input_data + b
 plot_data()
+data = get_gradiant_using_momentum(input_data, target_labels, LEARNING_RATE, 50)
+get_r2score(data[3])
