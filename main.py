@@ -1,6 +1,16 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.metrics import r2_score
+N = 50
+LEARNING_RATE = 0.001
+
+def plot_data():
+    """Function That plots the loss function vs number of trials"""
+    plt.scatter(input_data, target_labels)
+    plt.xlabel("Input Data")
+    plt.ylabel("Target Data")
+    plt.title("Plotting my Data")
+    plt.show()
 
 def plot_loss_epochs(loss_functions, epochs=1):
     """Function That plots the loss function vs number of trials"""
@@ -66,15 +76,51 @@ def get_gradiant(x, y, alpha, epochs=1):
         all_theta1.append(theta1)
     return all_theta0, all_theta1, all_loss_functions, all_hypothesis, theta0, theta1
 
-n = 50
-a = -2
-b = 1
-input_data = np.linspace(0, 20, n)
+def get_gradiant_using_momentum(x, y, alpha, epochs=1, gama=0.99):
+    """Function that takes the input data, target labels, learning rate and the number of iterations to be
+    performed then applies the mean  square error method and  returns the change in weight as float, bias as float
+    ,loss functions as a list ,predictions as a list, and the final weight as float and bias as float"""
+    m = len(x)
+    theta0 = 0
+    theta1 = 0
+    all_theta0 = []
+    all_theta1 = []
+    all_loss_functions = []
+    all_hypothesis = []
+    count = 1
+    old_loss_function = 0
+    for _ in range(epochs):
+        hypothesis = theta0 + theta1 * x
+        all_hypothesis.append(hypothesis)
+        loss_function = (1 / 2 * m) * sum((hypothesis - y) ** 2)
+        gradient = ((alpha / m) * sum(hypothesis - y), (alpha / m) * sum((hypothesis - y) * x))
+        vt = (gama * old_loss_function + gradient[0], gama * old_loss_function + gradient[1])
+        theta0 = theta0 - vt[0]
+        all_theta0.append(theta0)
+        theta1 = theta1 - vt[1]
+        all_theta1.append(theta1)
+        all_loss_functions.append(loss_function)
+        old_loss_function = loss_function
+        if np.round(gradient[0], 6) < 0.0001 or np.round(gradient[1], 6) < 0.0001:
+            break
+        print(count)
+        count += 1
+    return all_theta0, all_theta1, all_loss_functions, all_hypothesis, theta0, theta1
+
+# a = -2
+# b = 1
+# input_data = np.linspace(0, 20, N)
+# target_labels = a * input_data + b
+# plot_data()
+# data = get_gradiant(input_data, target_labels, LEARNING_RATE, 1000)
+# get_r2score(data[3])
+# plot_loss_epochs(data[2], 1000)
+# plot_thetas_with_loss(data[2], data[0], data[1])
+# plot_all_regression_lines(data[3])
+# plot_best_regression(data[3])
+
+a = -1
+b = 2
+input_data = np.linspace(0, 20, N)
 target_labels = a * input_data + b
-learning_rate = 0.001
-data = get_gradiant(input_data, target_labels, learning_rate, 1000)
-get_r2score(data[3])
-plot_loss_epochs(data[2], 1000)
-plot_thetas_with_loss(data[2], data[0], data[1])
-plot_all_regression_lines(data[3])
-plot_best_regression(data[3])
+plot_data()
