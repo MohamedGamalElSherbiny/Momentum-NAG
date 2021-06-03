@@ -1,13 +1,13 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.metrics import r2_score
-N = 50
+N = 100
 LEARNING_RATE = 0.0001
 
 def run_all_functions(inner_data):
     """Function that takes the change in weights, biases, loss functions, predictions ,
        and weight and bias as tuple and run all functions defined in this class"""
-    get_r2score(inner_data[3])
+    get_r2score(inner_data[3], target_labels)
     plot_loss_epochs(inner_data[2])
     plot_thetas_with_loss(inner_data[2], inner_data[0], inner_data[1])
     plot_all_regression_lines(inner_data[3])
@@ -57,17 +57,15 @@ def plot_best_regression(hypothesis_list):
     plt.title("Input Data vs Best Hypothesis and Target Labels")
     plt.show()
 
-def get_r2score(hypothesis_list):
+def get_r2score(hypothesis_list, y):
     """Function that prints the accuracy of the system"""
-    print("Accuracy = " + str(r2_score(target_labels, hypothesis_list[-1])))
+    print("Accuracy = " + str(r2_score(y, hypothesis_list[-1])))
 
-def get_gradiant(x, y, alpha, epochs=1):
+def get_gradiant(x, y, alpha, epochs=1, theta0=0, theta1=0):
     """Function that takes the input data, target labels, learning rate and the number of iterations to be
     performed then applies the mean  square error method and  returns the change in weight as float, bias as float
     ,loss functions as a list ,predictions as a list, and the final weight as float and bias as float"""
     m = len(x)
-    theta0 = 0
-    theta1 = 0
     all_theta0 = []
     all_theta1 = []
     all_loss_functions = []
@@ -86,6 +84,17 @@ def get_gradiant(x, y, alpha, epochs=1):
         if np.round(magnitude_gradient, 6) < 0.0001:
             break
     return all_theta0, all_theta1, all_loss_functions, all_hypothesis, theta0, theta1
+
+def using_mini_batch(x, y):
+    """Function that takes the input data and the target data and prints the accuracy of the system"""
+    theta0 = 0
+    theta1 = 0
+    for j in range(10):
+        for i in range(1, 101, 20):
+            inner_data = get_gradiant(x[i:i + 20], y[i:i + 20], LEARNING_RATE, 100, theta0, theta1)
+            theta0 = inner_data[4]
+            theta1 = inner_data[5]
+            get_r2score(inner_data[3], y[i:i + 20])
 
 def get_gradiant_using_momentum(x, y, alpha, epochs=1, gama=0.8):
     """Function that takes the input data, target labels, learning rate and the number of iterations to be
@@ -147,23 +156,29 @@ def get_gradiant_using_momentum_nag(x, y, alpha, epochs=1, gama=0.8):
             break
     return all_theta0, all_theta1, all_loss_functions, all_hypothesis, w[0], w[1]
 
+# a = -2
+# b = 1
+# input_data = np.linspace(0, 20, N)
+# target_labels = a * input_data + b
+# data = get_gradiant(input_data, target_labels, LEARNING_RATE, 1000)
+# run_all_functions(data)
+#
+# a = -1
+# b = 2
+# input_data = np.linspace(0, 20, N)
+# target_labels = a * input_data + b
+# data = get_gradiant_using_momentum(input_data, target_labels, LEARNING_RATE, 50)
+# run_all_functions(data)
+#
+# a = -1
+# b = 2
+# input_data = np.linspace(0, 20, N)
+# target_labels = a * input_data + b
+# data = get_gradiant_using_momentum_nag(input_data, target_labels, LEARNING_RATE, 100000)
+# run_all_functions(data)
+
 a = -2
 b = 1
 input_data = np.linspace(0, 20, N)
 target_labels = a * input_data + b
-data = get_gradiant(input_data, target_labels, LEARNING_RATE, 1000)
-run_all_functions(data)
-
-a = -1
-b = 2
-input_data = np.linspace(0, 20, N)
-target_labels = a * input_data + b
-data = get_gradiant_using_momentum(input_data, target_labels, LEARNING_RATE, 50)
-run_all_functions(data)
-
-a = -1
-b = 2
-input_data = np.linspace(0, 20, N)
-target_labels = a * input_data + b
-data = get_gradiant_using_momentum_nag(input_data, target_labels, LEARNING_RATE, 100000)
-run_all_functions(data)
+using_mini_batch(input_data, target_labels)
