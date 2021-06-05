@@ -217,7 +217,7 @@ def get_gradiant(x, y, alpha=0.001, epochs=1, theta0=0, theta1=0):
     for _ in range(epochs):
         hypothesis = theta0 + theta1 * x
         all_hypothesis = np.append(all_hypothesis, hypothesis)
-        loss_function = (1 / 2 * m) * sum((hypothesis - y) ** 2)
+        loss_function = (1 / (2 * m)) * sum((hypothesis - y) ** 2)
         all_loss_functions.append(loss_function)
         gradient = ((1 / m) * sum(hypothesis - y), (1 / m) * sum((hypothesis - y) * x))
         theta0 = theta0 - alpha * gradient[0]
@@ -389,7 +389,7 @@ def get_gradiant_using_momentum(x, y, alpha=0.001, epochs=1, gamma=0.8, theta0=0
     for _ in range(epochs):
         hypothesis = theta0 + theta1 * x
         all_hypothesis = np.append(all_hypothesis, hypothesis)
-        loss_function = (1 / 2 * m) * sum((hypothesis - y) ** 2)
+        loss_function = (1 / (2 * m)) * sum((hypothesis - y) ** 2)
         gradient = ((1 / m) * sum(hypothesis - y), (1 / m) * sum((hypothesis - y) * x))
         vt = (gamma * old_vt[0] + alpha * gradient[0], gamma * old_vt[1] + alpha * gradient[1])
         theta0 = theta0 - vt[0]
@@ -447,7 +447,7 @@ def get_gradiant_using_momentum_nag(x, y, alpha=0.001, epochs=1, gamma=0.8):
     for _ in range(epochs):
         hypothesis = w[0] + w[1] * x
         all_hypothesis = np.append(all_hypothesis, hypothesis)
-        loss_function = (1 / 2 * m) * sum((hypothesis - y) ** 2)
+        loss_function = (1 / (2 * m)) * sum((hypothesis - y) ** 2)
         w_temp = (w[0] - gamma * old_vt[0], w[1] - gamma * old_vt[1])
         hypothesis_temp = w_temp[0] + w_temp[1] * x
         gradient_w_temp = ((1 / m) * sum(hypothesis_temp - y), (1 / m) * sum((hypothesis_temp - y) * x))
