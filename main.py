@@ -1,78 +1,222 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.metrics import r2_score
-N = 100
-LEARNING_RATE = 0.0001
 
-def run_all_functions(inner_data):
-    """Function that takes the change in weights, biases, loss functions, predictions ,
-       and weight and bias as tuple and run all functions defined in this class"""
-    get_r2score(inner_data[3], target_labels)
+def generate_random_data(a, b, n=50):
+    """Generates a random data
+
+    Parameters
+    ----------
+
+    a :         int
+                Coefficient of x
+
+    b :         int
+                The constant term
+
+    n :         int, optional
+                The number of points
+
+    Returns
+    -------
+
+    Tuple:
+
+    x (Input Data) : int
+    y (Output Data) : int
+
+    """
+    x = np.linspace(0, 20, n)
+    return x, a * x + b
+
+def run_all_functions(inner_data, x, y):
+    """Runs all functions
+
+    Parameters
+    ----------
+
+    inner_data :        Tuple
+                        Containing ( all_theta0, all_theta1, all_loss_functions, all_hypothesis, theta0, theta1 )
+
+    x :                 List
+                        All input data
+
+    y :                 List
+                        A list of the target data
+
+    """
+    get_r2score(inner_data[3], y)
     plot_loss_epochs(inner_data[2])
     plot_thetas_with_loss(inner_data[2], inner_data[0], inner_data[1])
-    plot_all_regression_lines(inner_data[3])
-    plot_best_regression(inner_data[3])
+    plot_all_regression_lines(inner_data[3], x)
+    plot_best_regression(inner_data[3], x, y)
 
-def plot_data():
-    """Function That plots the loss function vs number of trials"""
-    plt.scatter(input_data, target_labels)
+def plot_data(x, y):
+    """Plots my data
+
+    Parameters
+    ----------
+
+    x :             List
+                    The input data
+
+    y :             List
+                    The output data
+
+    """
+    plt.scatter(x, y)
     plt.xlabel("Input Data")
     plt.ylabel("Target Data")
     plt.title("Plotting my Data")
     plt.show()
 
-def plot_loss_epochs(loss_functions):
-    """Function That plots the loss function vs number of trials"""
-    plt.plot(loss_functions, np.arange(len(loss_functions)))
+def plot_loss_epochs(all_loss_functions):
+    """Plots the loss function vs number of trials
+
+    Parameters
+    ----------
+
+    all_loss_functions :    List
+                            All the loss functions
+
+    """
+    plt.plot(all_loss_functions, np.arange(len(all_loss_functions)))
     plt.xlabel("Loss Functions")
     plt.ylabel("Epochs (Number Of full Iterations)")
     plt.title("Loss Functions vs Epochs")
     plt.show()
 
-def plot_thetas_with_loss(loss_functions, theta0, theta1):
-    """Function that plots the loss function vs the change in weight and bias"""
-    plt.plot(theta0, loss_functions)
-    plt.plot(theta1, loss_functions, 'r')
+def plot_thetas_with_loss(all_loss_functions, weights, bias):
+    """Plots the loss function vs the change in weight and bias
+
+    Parameters
+    ----------
+
+    all_loss_functions :    List
+                            All the loss functions
+
+    weights :               List
+                            All weights (thetas1)
+
+    bias :                  List
+                            All biases (theta0)
+
+    """
+    plt.plot(weights, all_loss_functions)
+    plt.plot(bias, all_loss_functions, 'r')
     plt.yscale("Log")
     plt.xlabel("Weight and Bias (Weight in red)")
     plt.ylabel("Loss Function")
     plt.title("Weights and Biases vs Loss Function")
     plt.show()
 
-def plot_all_regression_lines(hypothesis_list):
-    """Function that plots the input data  vs the change in prediction line"""
-    for i in hypothesis_list:
-        plt.plot(input_data, i)
+def plot_all_regression_lines(hypothesis_list, x):
+    """Plots the input data  vs the change in prediction line
+
+    Parameters
+    ----------
+
+    hypothesis_list :   List
+                        All prediction equations
+
+    x :                 List
+                        All input data
+
+    """
+    start = 0
+    iterations = len(x)
+    m = int(len(hypothesis_list)/len(x))
+    for _ in range(m):
+        plt.plot(x, hypothesis_list[start: start + iterations])
+        start += iterations
     plt.xlabel("Input Data")
-    plt.ylabel("Change in Hypothesis")
-    plt.title("Input Data vs Change in Hypothesis")
+    plt.ylabel("Predictions")
+    plt.title("Change in Predictions vs Input Data")
     plt.show()
 
-def plot_best_regression(hypothesis_list):
-    """Function that plots the input data vs the target data and the best prediction line"""
-    plt.scatter(input_data, target_labels)
-    plt.plot(input_data, hypothesis_list[-1], 'r')
+def plot_best_regression(hypothesis_list, x, y):
+    """Plots the input data vs the target data and the best prediction line
+
+    Parameters
+    ----------
+
+    hypothesis_list :   List
+                        All prediction equations
+
+    x :                 List
+                        All input data
+
+    y :                 List
+                        All output data
+
+    """
+    plt.scatter(x, y)
+    plt.plot(x, hypothesis_list[-(len(x)):], 'r')
     plt.xlabel("Input Data")
     plt.ylabel("Best Hypothesis and Target Labels (Hypothesis in red)")
-    plt.title("Input Data vs Best Hypothesis and Target Labels")
+    plt.title("Target and Predictions vs Input Data")
     plt.show()
 
 def get_r2score(hypothesis_list, y):
-    """Function that prints the accuracy of the system"""
-    print("Accuracy = " + str(r2_score(y, hypothesis_list[-1])))
+    """Prints the accuracy of the system
 
-def get_gradiant(x, y, alpha, epochs=1, theta0=0, theta1=0):
-    """Function that takes the input data, target labels, learning rate and the number of iterations to be
-    performed then applies the mean  square error method and  returns the change in weight as float, bias as float
-    ,loss functions as a list ,predictions as a list, and the final weight as float and bias as float"""
+    Parameters
+    ----------
+
+    hypothesis_list :           List
+                                All prediction equations
+
+    y :                         List
+                                All output data
+
+    """
+    print("Accuracy = " + str(r2_score(y, hypothesis_list[-len(y):])))
+
+def get_gradiant(x, y, alpha=0.001, epochs=1, theta0=0, theta1=0):
+    """Calculates the gradient descent using mean square error method
+
+    Parameters
+    ----------
+    
+    x :         List
+                A list of input data
+    
+    y :         List
+                The output data
+
+    alpha:      float, optional
+                The learning rate of the system
+    
+    epochs :    int, Optional
+                The number of iterations to be performed on the data
+    
+    theta0 :    int, Optional
+                The initial value of the bias
+
+    theta1 :    int, Optional
+                The initial value of the weight
+
+    Returns
+    -------
+
+    Tuple :
+
+    all_theta0 (Biases) : List
+    all_theta1 (Weights): List
+    all_loss_functions (All MSE calculations): List
+    List all_hypothesis (Predictions): List
+    theta0 (Final Bias): int
+    theta1 (Final Weight): int
+
+    """
     m = len(x)
     all_theta0 = []
     all_theta1 = []
     all_loss_functions = []
-    all_hypothesis = []
+    all_hypothesis = np.array([])
     for _ in range(epochs):
         hypothesis = theta0 + theta1 * x
-        all_hypothesis.append(hypothesis)
+        all_hypothesis = np.append(all_hypothesis, hypothesis)
         loss_function = (1 / 2 * m) * sum((hypothesis - y) ** 2)
         all_loss_functions.append(loss_function)
         gradient = ((1 / m) * sum(hypothesis - y), (1 / m) * sum((hypothesis - y) * x))
@@ -85,65 +229,169 @@ def get_gradiant(x, y, alpha, epochs=1, theta0=0, theta1=0):
             break
     return all_theta0, all_theta1, all_loss_functions, all_hypothesis, theta0, theta1
 
-def stochastic_GD(x_points, y_points, no_of_iterations):
-    """Function that takes the input data and the target data and plots the loss function against the number of
-    iterations and prints the accuracy of the system"""
-    theta0 = 0
-    theta1 = 0
-    alpha = .001
-    m = len(y_points)
-    gradient = np.zeros(2)
-    loss_function = []
-    hypothesis_list = []
-    for i in range(no_of_iterations):
-        for j in range(m):
-            hypothesis = theta0 + theta1 * x_points[j]
-            hypothesis_list.append(hypothesis)
-            gradient[0] = hypothesis - y_points[j]
-            gradient[1] = (hypothesis - y_points[j]) * x_points[j]
-            cost = ((hypothesis - y_points[j])**2)/2
-            loss_function.append(cost)
-            theta0 = theta0 - alpha * gradient[0]
-            theta1 = theta1 - alpha * gradient[1]
-        new_hypothesis = [(theta0 + theta1 * x) for x in x_points]
-        print(r2_score(y_points, new_hypothesis))
-    hypothesis_list = np.array(hypothesis_list)
-    print("Final Accuracy = " + str(r2_score(y_points, hypothesis_list[-100:])))
-    plt.plot(np.arange(no_of_iterations*m), loss_function)
-    plt.show()
+def stochastic_GD(x, y, epochs, alpha=0.001, theta0=0, theta1=0):
+    """Calculates the stochastic gradient descent using mean square error method
 
-def using_mini_batch(x, y):
-    """Function that takes the input data and the target data and prints the accuracy of the system using the
-    mini batch system"""
-    theta0 = 0
-    theta1 = 0
-    for j in range(10):
-        for i in range(1, 101, 20):
-            inner_data = get_gradiant(x[i:i + 20], y[i:i + 20], LEARNING_RATE, 100, theta0, theta1)
-            theta0 = inner_data[4]
-            theta1 = inner_data[5]
-            get_r2score(inner_data[3], y[i:i + 20])
-            plt.plot(np.arange(len(inner_data[2])), inner_data[2])
-        plt.show()
+    Parameters
+    ----------
 
-def get_gradiant_using_momentum(x, y, alpha, epochs=1, gama=0.8):
-    """Function that takes the input data, target labels, learning rate and the number of iterations to be
-    performed then applies the mean  square error method and  returns the change in weight as float, bias as float
-    ,loss functions as a list ,predictions as a list, and the final weight as float and bias as float"""
-    m = len(x)
-    theta0 = 0
-    theta1 = 0
+    x :         List
+                A list of input data
+
+    y :         List
+                The output data
+
+    alpha:      int
+                The learning rate of the system
+
+    epochs :    int, Optional
+                The number of iterations to be performed on the data
+
+    theta0 :    int, Optional
+                The initial value of the bias
+
+    theta1 :    int, Optional
+                The initial value of the weight
+
+    Returns
+    -------
+
+    Tuple :
+
+    all_theta0 (Biases) : List
+    all_theta1 (Weights): List
+    all_loss_functions (All MSE calculations): List
+    List all_hypothesis (Predictions): List
+    theta0 (Final Bias): int
+    theta1 (Final Weight): int
+
+    """
     all_theta0 = []
     all_theta1 = []
     all_loss_functions = []
-    all_hypothesis = []
+    m = len(y)
+    gradient = np.zeros(2)
+    all_hypothesis = np.array([])
+    for i in range(epochs):
+        for j in range(m):
+            hypothesis = theta0 + theta1 * x[j]
+            all_hypothesis = np.append(all_hypothesis, hypothesis)
+            gradient[0] = hypothesis - y[j]
+            gradient[1] = (hypothesis - y[j]) * x[j]
+            cost = ((hypothesis - y[j]) ** 2) / 2
+            all_loss_functions.append(cost)
+            theta0 = theta0 - alpha * gradient[0]
+            all_theta0.append(theta0)
+            theta1 = theta1 - alpha * gradient[1]
+            all_theta1.append(theta1)
+        new_hypothesis = [(theta0 + theta1 * x) for x in x]
+        all_hypothesis = np.append(all_hypothesis, new_hypothesis)
+    return all_theta0, all_theta1, all_loss_functions, all_hypothesis, theta0, theta1
+
+def using_mini_batch(x, y, alpha=0.0001, epochs=1, theta0=0, theta1=0):
+    """Calculates the gradient descent using mean square error method
+
+    Parameters
+    ----------
+
+    x :         List
+                A list of input data
+
+    y :         List
+                The output data
+
+    alpha:      int
+                The learning rate of the system
+
+    epochs :    int, Optional
+                The number of iterations to be performed on the data
+
+    theta0 :    int, Optional
+                The initial value of the bias
+
+    theta1 :    int, Optional
+                The initial value of the weight
+
+    Returns
+    -------
+
+    Tuple :
+
+    all_theta0 (Biases) : List
+    all_theta1 (Weights): List
+    all_loss_functions (All MSE calculations): List
+    all_hypothesis (Predictions): List
+    theta0 (Final Bias): int
+    theta1 (Final Weight): int
+
+    """
+    all_theta0 = []
+    all_theta1 = []
+    all_loss_functions = []
+    all_hypothesis = np.array([])
+    for j in range(epochs):
+        for i in range(1, 101, 20):
+            inner_data = get_gradiant(x[i:i + 20], y[i:i + 20], alpha=alpha, theta0=theta0, theta1=theta1)
+            all_theta0.append(inner_data[0])
+            all_theta1.append(inner_data[1])
+            all_loss_functions.append(inner_data[2])
+            all_hypothesis = np.append(all_hypothesis, inner_data[3])
+            theta0 = inner_data[4]
+            theta1 = inner_data[5]
+    return all_theta0, all_theta1, all_loss_functions, all_hypothesis, theta0, theta1
+
+def get_gradiant_using_momentum(x, y, alpha=0.001, epochs=1, gamma=0.8, theta0=0, theta1=0):
+    """Calculates the gradient descent using mean square error method implementing the momentum method
+
+    Parameters
+    ----------
+
+    x :         List
+                A list of input data
+
+    y :         List
+                The output data
+
+    alpha :     float, optional
+                The learning rate of the system
+
+    epochs :    int, Optional
+                The number of iterations to be performed on the data
+
+    gamma :     float, optional
+                The momentum term
+
+    theta0 :    int, Optional
+                The initial value of the bias
+
+    theta1 :    int, Optional
+                The initial value of the weight
+
+    Returns
+    -------
+
+    Tuple :
+
+            all_theta0 (Biases) : List
+            all_theta1 (Weights): List
+            all_loss_functions (All MSE calculations): List
+            List all_hypothesis (Predictions): List
+            theta0 (Final Bias): int
+            theta1 (Final Weight): int
+
+    """
+    m = len(x)
+    all_theta0 = []
+    all_theta1 = []
+    all_loss_functions = []
+    all_hypothesis = np.array([])
     old_vt = (0, 0)
     for _ in range(epochs):
         hypothesis = theta0 + theta1 * x
-        all_hypothesis.append(hypothesis)
+        all_hypothesis = np.append(all_hypothesis, hypothesis)
         loss_function = (1 / 2 * m) * sum((hypothesis - y) ** 2)
         gradient = ((1 / m) * sum(hypothesis - y), (1 / m) * sum((hypothesis - y) * x))
-        vt = (gama * old_vt[0] + alpha * gradient[0], gama * old_vt[1] + alpha * gradient[1])
+        vt = (gamma * old_vt[0] + alpha * gradient[0], gamma * old_vt[1] + alpha * gradient[1])
         theta0 = theta0 - vt[0]
         all_theta0.append(theta0)
         theta1 = theta1 - vt[1]
@@ -155,27 +403,56 @@ def get_gradiant_using_momentum(x, y, alpha, epochs=1, gama=0.8):
             break
     return all_theta0, all_theta1, all_loss_functions, all_hypothesis, theta0, theta1
 
-def get_gradiant_using_momentum_nag(x, y, alpha, epochs=1, gama=0.8):
-    """Function that implements (the nesterov accelerated gradient descent) that takes the input data, target labels,
-     learning rate and the number of iterations to be performed then applies the mean  square error method and
-       returns the change in weight as float, bias as float,loss functions as a list ,predictions as a list,
-       and the final weight as float and bias as float"""
+def get_gradiant_using_momentum_nag(x, y, alpha=0.001, epochs=1, gamma=0.8):
+    """Calculates the gradient descent using mean square error method implementing the the nesterov accelerated
+
+    Parameters
+    ----------
+
+    x :         List
+                A list of input data
+
+    y :         List
+                The output data
+
+    alpha :     float, optional
+                The learning rate of the system
+
+    epochs :    int, Optional
+                The number of iterations to be performed on the data
+
+    gamma :     float, optional
+                The momentum term
+
+    Returns
+    -------
+
+    Tuple :
+
+            all_theta0 (Biases) : List
+            all_theta1 (Weights): List
+            all_loss_functions (All MSE calculations): List
+            List all_hypothesis (Predictions): List
+            theta0 (Final Bias): int
+            theta1 (Final Weight): int
+
+    """
     m = len(x)
     w = np.zeros(2)
     all_theta0 = []
     all_theta1 = []
     all_loss_functions = []
-    all_hypothesis = []
+    all_hypothesis = np.array([])
     old_vt = (0, 0)
     for _ in range(epochs):
         hypothesis = w[0] + w[1] * x
-        all_hypothesis.append(hypothesis)
+        all_hypothesis = np.append(all_hypothesis, hypothesis)
         loss_function = (1 / 2 * m) * sum((hypothesis - y) ** 2)
-        w_temp = (w[0] - gama * old_vt[0], w[1] - gama * old_vt[1])
+        w_temp = (w[0] - gamma * old_vt[0], w[1] - gamma * old_vt[1])
         hypothesis_temp = w_temp[0] + w_temp[1] * x
         gradient_w_temp = ((1 / m) * sum(hypothesis_temp - y), (1 / m) * sum((hypothesis_temp - y) * x))
         next_w = (w_temp[0] - alpha * gradient_w_temp[0], w_temp[1] - alpha * gradient_w_temp[1])
-        vt = (gama * old_vt[0] + alpha * gradient_w_temp[0], gama * old_vt[1] + alpha * gradient_w_temp[1])
+        vt = (gamma * old_vt[0] + alpha * gradient_w_temp[0], gamma * old_vt[1] + alpha * gradient_w_temp[1])
         w = next_w
         all_theta0.append(w[0])
         all_theta1.append(w[1])
@@ -186,35 +463,22 @@ def get_gradiant_using_momentum_nag(x, y, alpha, epochs=1, gama=0.8):
             break
     return all_theta0, all_theta1, all_loss_functions, all_hypothesis, w[0], w[1]
 
-# a = -2
-# b = 1
-# input_data = np.linspace(0, 20, N)
-# target_labels = a * input_data + b
-# data = get_gradiant(input_data, target_labels, LEARNING_RATE, 1000)
-# run_all_functions(data)
-#
-# a = -1
-# b = 2
-# input_data = np.linspace(0, 20, N)
-# target_labels = a * input_data + b
-# data = get_gradiant_using_momentum(input_data, target_labels, LEARNING_RATE, 50)
-# run_all_functions(data)
-#
-# a = -1
-# b = 2
-# input_data = np.linspace(0, 20, N)
-# target_labels = a * input_data + b
-# data = get_gradiant_using_momentum_nag(input_data, target_labels, LEARNING_RATE, 100000)
-# run_all_functions(data)
+input_data, target_labels = generate_random_data(-2, 1)
+data = get_gradiant(input_data, target_labels, epochs=1000)
+run_all_functions(data, input_data, target_labels)
 
-a = -2
-b = 1
-input_data = np.linspace(0, 20, N)
-target_labels = a * input_data + b
-using_mini_batch(input_data, target_labels)
+input_data, target_labels = generate_random_data(-1, 2)
+data = get_gradiant_using_momentum(input_data, target_labels, epochs=50)
+run_all_functions(data, input_data, target_labels)
 
-# a = -2
-# b = 1
-# input_data = np.linspace(0, 20, N)
-# target_labels = a * input_data + b
-# stochastic_GD(input_data, target_labels, 3)
+input_data, target_labels = generate_random_data(-1, 2)
+data = get_gradiant_using_momentum_nag(input_data, target_labels, epochs=1000)
+run_all_functions(data, input_data, target_labels)
+
+input_data, target_labels = generate_random_data(-2, 1, n=100)
+data = using_mini_batch(input_data, target_labels, epochs=1000)
+run_all_functions(data, input_data, target_labels)
+
+input_data, target_labels = generate_random_data(-2, 1)
+data = stochastic_GD(input_data, target_labels, 3)
+run_all_functions(data, input_data, target_labels)
