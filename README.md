@@ -10,9 +10,14 @@
     
 
 * Mini Batch Gradient Descent
-  
 
 * Stochastic Gradient Descent
+
+* Implementing the Adagrad Method
+
+* Implementing the RMS Prop Method
+
+* Implementing the Adam Method
 
 * Adding the charts for each implementation
 
