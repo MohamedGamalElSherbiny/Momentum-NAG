@@ -56,21 +56,21 @@ class GradientDescent:
 
         """
         m = len(self.x)
-        all_theta0 = []
-        all_theta1 = []
-        all_loss_functions = []
+        all_theta0 = np.array([])
+        all_theta1 = np.array([])
+        all_loss_functions = np.array([])
         all_hypothesis = np.array([])
         for _ in range(self.epochs):
-            hypothesis = self.theta0 + self.theta1 * self.x
-            all_hypothesis = np.append(all_hypothesis, hypothesis)
-            loss_function = (1 / (2 * m)) * sum((hypothesis - self.y) ** 2)
-            all_loss_functions.append(loss_function)
-            gradient = ((1 / m) * sum(hypothesis - self.y), (1 / m) * sum((hypothesis - self.y) * self.x))
-            self.theta0 -= self.alpha * gradient[0]
-            all_theta0.append(self.theta0)
-            self.theta1 -= self.alpha * gradient[1]
-            all_theta1.append(self.theta1)
             if len(all_loss_functions) > 1:
                 if round(all_loss_functions[-1], 5) == round(all_loss_functions[-2], 5):
                     break
+            hypothesis = self.theta0 + self.theta1 * self.x
+            all_hypothesis = np.append(all_hypothesis, hypothesis)
+            loss_function = (1 / (2 * m)) * sum((hypothesis - self.y) ** 2)
+            all_loss_functions = np.append(all_loss_functions, loss_function)
+            gradient = ((1 / m) * sum(hypothesis - self.y), (1 / m) * sum((hypothesis - self.y) * self.x))
+            self.theta0 -= self.alpha * gradient[0]
+            all_theta0 = np.append(all_theta0, self.theta0)
+            self.theta1 -= self.alpha * gradient[1]
+            all_theta1 = np.append(all_theta1, self.theta1)
         return all_theta0, all_theta1, all_loss_functions, all_hypothesis, self.theta0, self.theta1, self.name
