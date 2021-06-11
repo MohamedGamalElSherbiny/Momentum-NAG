@@ -2,7 +2,7 @@ import numpy as np
 
 class GradientDescent:
 
-    def __init__(self, x, y, alpha=0.001, epochs=1, theta0=0, theta1=1):
+    def __init__(self, x, y, alpha=0.001, epochs=1, theta0=0, theta1=0):
         """
          Parameters
         ----------

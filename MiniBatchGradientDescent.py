@@ -64,13 +64,13 @@ class MiniBatchGradientDescent:
         all_hypothesis = np.array([])
         for j in range(self.epochs):
             for i in range(1, 101, 20):
-                gd = GradientDescent(self.x[i:i + 20], self.y[i:i + 20],
-                                     epochs=10, theta0=self.theta0, theta1=self.theta1)
+                gd = GradientDescent(x=self.x[i:i + 20], y=self.y[i:i + 20],
+                                     epochs=1, theta0=self.theta0, theta1=self.theta1)
                 data = gd.get_gradiant_data()
                 all_theta0.append(data[0])
                 all_theta1.append(data[1])
-                all_loss_functions.append(data[2])
-                all_hypothesis = np.append(all_hypothesis, data[3])
                 self.theta0 = data[4]
                 self.theta1 = data[5]
+                all_loss_functions.append(data[2])
+                all_hypothesis = np.append(all_hypothesis, data[3])
         return all_theta0, all_theta1, all_loss_functions, all_hypothesis, self.theta0, self.theta1, self.name
