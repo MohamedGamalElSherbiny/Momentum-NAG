@@ -27,8 +27,8 @@ class Plot:
         """ Runs all functions """
         print(f"\n{self.data[6]}:\n")
         self.get_r2score()
-        # self.plot_loss_epochs()
-        # self.plot_thetas_with_loss()
+        self.plot_loss_epochs()
+        self.plot_thetas_with_loss()
         self.plot_all_regression_lines()
         self.plot_best_regression()
 
