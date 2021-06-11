@@ -19,7 +19,7 @@ def run_all_functions(data, x, y):
                     A list of the target data
 
     """
-    print(f"{data[6]}:\n")
+    print(f"\n{data[6]}:\n")
     get_r2score(data[3], y)
     plot_loss_epochs(data[2])
     plot_thetas_with_loss(data[2], data[0], data[1])
